@@ -124,4 +124,3 @@ alias rr=". ranger"
 
 # Setup keychain on login
 # eval `keychain --agents ssh --eval id_rsa`
-alias sshfs="mysshfs"
