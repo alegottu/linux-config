@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Prereqs
+sudo apt update
+
 # Setup vim
 curl -L https://raw.githubusercontent.com/alegottu/linux-config/main/.vimrc -o ~/.vimrc
 curl -Lo ~/.vim/autoload/plug.vim --create-dirs \
