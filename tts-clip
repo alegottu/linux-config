@@ -1,4 +1,0 @@
-export PULSE_SERVER=/mnt/wslg/PulseServer
-xclip -o -selection clipboard > temp.txt
-larynx -v glados --raw-stream < temp.txt | paplay --raw --rate=22050 --channels=1 --format=s16le
-rm temp.txt
