@@ -122,9 +122,6 @@ PROMPT_COMMAND=${PROMPT_COMMAND:+"$PROMPT_COMMAND; "}'printf "\e]9;9;%s\e\\" "$(
 
 alias rr=". ranger"
 
-# Keyboard shortcut for TTS current selection
-bind -x '"\C-s":tts-clip'
-
 # Setup keychain on login
 # eval `keychain --agents ssh --eval id_rsa`
 alias sshfs="mysshfs"
