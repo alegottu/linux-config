@@ -1,3 +1,11 @@
+set ruler
+
+" Possible spelling stuff here
+
+" Case for searching
+set ignorecase
+set smartcase
+
 " Shortcut to enter normal mode
 inoremap kj <Esc>
 
