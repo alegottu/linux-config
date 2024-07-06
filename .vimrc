@@ -61,6 +61,7 @@ function StartLsp() abort
   nmap <buffer> gi <plug>(lsp-definition)
   nmap <buffer> gd <plug>(lsp-declaration)
   nmap <buffer> gr <plug>(lsp-references)
+  nmap <buffer> ge <plug>(lsp-document-diagnostics)
   nmap <buffer> <space>r <plug>(lsp-rename)
   nmap <buffer> gh <plug>(lsp-hover)
 endfunction
