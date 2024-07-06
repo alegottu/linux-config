@@ -42,25 +42,20 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'sheerun/vim-polyglot'
 Plug 'tpope/vim-surround'
-Plug 'yegappan/lsp'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'mattn/vim-lsp-settings'
 
 call plug#end()
 
-let lspOpts = #{autoHighlightDiags: v:true}
-autocmd User LspSetup call LspOptionsSet(lspOpts)
+function StartLsp() abort
+  setlocal omnifunc=lsp#complete
+  setlocal signcolumn=yes
+  nmap <buffer> gi <plug>(lsp-definition)
+  nmap <buffer> gd <plug>(lsp-declaration)
+  nmap <buffer> gr <plug>(lsp-references)
+  nmap <buffer> <space>r <plug>(lsp-rename)
+  nmap <buffer> gh <plug>(lsp-hover)
+endfunction
 
-let lspServers = [#{
-	\    name: 'clangd',
-	\    filetype: ['c', 'cpp'],
-	\    path: '/usr/local/bin/clangd',
-	\    args: ['--background-index']
-	\  },
-  \ #{
-	\    name: 'rustlang',
-	\    filetype: ['rust'],
-	\    path: '/usr/local/bin/rust-analyzer',
-	\    args: [],
-	\    syncInit: v:true
-	\  }]
-
-autocmd User LspSetup call LspAddServer(lspServers)
+" Could be used on demand instead
+call StartLsp()
