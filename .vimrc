@@ -41,26 +41,26 @@ packadd termdebug
 call plug#begin('~/.vim/plugged')
 
 Plug 'sheerun/vim-polyglot'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'tpope/vim-surround'
+Plug 'yegappan/lsp'
 
 call plug#end()
 
-"Use Enter to confirm autocomplete
-inoremap <expr> <cr> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
-inoremap <silent><expr> <cr> coc#pum#visible() ? coc#_select_confirm() : "\<C-g>u\<CR>"
+let lspOpts = #{autoHighlightDiags: v:true}
+autocmd User LspSetup call LspOptionsSet(lspOpts)
 
-"Format upon autocomplete
-inoremap <silent><expr> <cr> coc#pum#visible() ? coc#_select_confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+let lspServers = [#{
+	\    name: 'clangd',
+	\    filetype: ['c', 'cpp'],
+	\    path: '/usr/local/bin/clangd',
+	\    args: ['--background-index']
+	\  },
+  \ #{
+	\    name: 'rustlang',
+	\    filetype: ['rust'],
+	\    path: '/usr/local/bin/rust-analyzer',
+	\    args: [],
+	\    syncInit: v:true
+	\  }]
 
-" Use <tab> and <S-Tab> to trigger completion and navigate to the next complete item
-function! CheckBackspace() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
-inoremap <silent><expr> <Tab>
-      \ coc#pum#visible() ? coc#pum#next(1) :
-      \ CheckBackspace() ? "\<Tab>" :
-      \ coc#refresh()
-inoremap <expr> <S-Tab> coc#pum#visible() ? coc#pum#prev(1) : "\<S-Tab>"
+autocmd User LspSetup call LspAddServer(lspServers)
