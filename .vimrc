@@ -1,6 +1,8 @@
+" Show where you are in a file
 set ruler
 
-" Possible spelling stuff here
+" Set spellcheck languages, remember `set nospell` to turn off
+set spell spelllang=en_us,es
 
 " Case for searching
 set ignorecase
@@ -20,16 +22,16 @@ nnoremap B <C-v>
 inoremap <C-f> <Esc>:Lex<cr>:vertical resize 30<cr>
 nnoremap <C-f> :Lex<cr>:vertical resize 30<cr>
 
-" Disable compatibility with vi which can cause unexpected issues.
+" Disable compatibility with vi which can cause unexpected issues
 set nocompatible
 
 " Enable type filetype detection.
 filetype on
 
-" Enable plugins and load plugin for the detected file type.
+" Enable plugins and load plugin for the detected file type
 filetype plugin on
 
-" Load an indent file for the detected file type.
+" Load an indent file for the detected file type
 filetype indent on
 
 " Enable hybrid line-numbers by default
@@ -55,6 +57,7 @@ Plug 'mattn/vim-lsp-settings'
 
 call plug#end()
 
+" Set up LSP functionality
 function StartLsp() abort
   setlocal omnifunc=lsp#complete
   setlocal signcolumn=yes
