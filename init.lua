@@ -566,6 +566,5 @@ require('lazy').setup({
 }, {
   ui = {
     icons = {}
-    },
-  },
+   },
 })
