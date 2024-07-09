@@ -66,6 +66,9 @@ vim.keymap.set('n', '<leader>E', vim.diagnostic.goto_prev, { desc = 'Go to previ
 -- Smoother exit to normal mode
 vim.keymap.set('i', 'kj', '<Esc>')
 
+-- File tree shortcut
+vim.keymap.set('n', '<C-f>', ':Lex<cr>:vertical resize 30<cr>')
+
 --  Use CTRL+<hjkl> to switch between windows
 --  See `:help wincmd` for a list of all window commands
 vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
