@@ -60,10 +60,8 @@ vim.opt.hlsearch = true
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 --  Diagnostic keymaps
-vim.keymap.set('n', '<leader>pd', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
-vim.keymap.set('n', '<leader>nd', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
--- vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
--- vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+vim.keymap.set('n', '<leader>e', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
+vim.keymap.set('n', '<leader>E', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
 
 -- Smoother exit to normal mode
 vim.keymap.set('i', 'kj', '<Esc>')
