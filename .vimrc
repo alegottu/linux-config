@@ -11,8 +11,7 @@ set smartcase
 " Shortcut to enter normal mode
 inoremap kj <Esc>
 
-" System copy + paste bindings
-vnoremap <C-c> "+y
+" Bind for paste from system clipboard
 vnoremap <C-v> "+P
 
 " Ensure visual-block mode still has a binding
@@ -44,6 +43,9 @@ augroup numbertoggle
   autocmd BufLeave,FocusLost,InsertEnter,WinLeave   * if &nu                  | set nornu | endif
 augroup END
 
+" Automatically yank text to system clipboard also
+autocmd TextYankPost * :call system('xclip -selection clipboard', @0)
+
 " Handle standard plugins
 packadd termdebug
 
@@ -60,7 +62,7 @@ call plug#end()
 " Set up LSP functionality
 function StartLsp() abort
   setlocal omnifunc=lsp#complete
-  setlocal signcolumn=yes
+  setlocal signcolumn=no
   nmap <buffer> gi <plug>(lsp-definition)
   nmap <buffer> gd <plug>(lsp-declaration)
   nmap <buffer> gr <plug>(lsp-references)
