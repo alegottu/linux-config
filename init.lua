@@ -21,9 +21,6 @@ vim.opt.cursorline = true
 -- Mouse mode useful for resizing splits
 vim.opt.mouse = 'a'
 
--- Only nice with mini.statusline
-vim.opt.showmode = false
-
 -- Sync clipboard between OS and Neovim.
 vim.opt.clipboard = 'unnamedplus'
 
@@ -93,16 +90,17 @@ vim.api.nvim_create_autocmd({ "CursorHold" }, {
 	pattern = "*",
 	callback = function()
 		vim.diagnostic.open_float({
-		scope = "cursor",
-		focusable = false,
-		close_events = {
-			"CursorMoved",
-			"CursorMovedI",
-			"BufHidden",
-			"InsertCharPre",
-			"WinLeave",
-		},
-	}) end,
+			scope = "cursor",
+			focusable = false,
+			close_events = {
+				"CursorMoved",
+				"CursorMovedI",
+				"BufHidden",
+				"InsertCharPre",
+				"WinLeave",
+			},
+		})
+	end,
 })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
@@ -297,7 +295,7 @@ require('lazy').setup({
 					end
 
 					-- Jump to the definition of the word under your cursor.
-					-- To jump back, press <C-t>.
+					-- To jump back, press <C-t>, because NVIM leaves a tag where you left off
 					map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
 
 					-- Find references for the word under your cursor.
@@ -552,21 +550,6 @@ require('lazy').setup({
 			-- - sd'   - [S]urround [D]elete [']quotes
 			-- - sr)'  - [S]urround [R]eplace [)] [']
 			require('mini.surround').setup()
-
-			-- Simple and easy statusline.
-			--  You could remove this setup call if you don't like it,
-			--  and try some other statusline plugin
-			local statusline = require 'mini.statusline'
-			-- set use_icons to true if you have a Nerd Font
-			statusline.setup { use_icons = vim.g.have_nerd_font }
-
-			-- You can configure sections in the statusline by overriding their
-			-- default behavior. For example, here we set the section for
-			-- cursor location to LINE:COLUMN
-			---@diagnostic disable-next-line: duplicate-set-field
-			statusline.section_location = function()
-				return '%2l:%-2v'
-			end
 		end,
 	},
 	{ -- Highlight, edit, and navigate code
