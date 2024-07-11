@@ -18,6 +18,10 @@ vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.cursorline = true
 
+-- Tab spacing
+vim.opt.shiftwidth = 4;
+vim.opt.tabstop = 4;
+
 -- Mouse mode useful for resizing splits
 vim.opt.mouse = 'a'
 
