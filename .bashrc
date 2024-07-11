@@ -121,6 +121,4 @@ fi
 PROMPT_COMMAND=${PROMPT_COMMAND:+"$PROMPT_COMMAND; "}'printf "\e]9;9;%s\e\\" "$(wslpath -w "$PWD")"'
 
 alias rr=". ranger"
-
-# Setup keychain on login
-# eval `keychain --agents ssh --eval id_rsa`
+alias clip="xclip -selection clipboard"
