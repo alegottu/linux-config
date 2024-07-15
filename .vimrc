@@ -1,6 +1,10 @@
 " Show where you are in a file
 set ruler
 
+" More visible tab spacing
+set tabstop=4
+set shiftwidth=4
+
 " Set spellcheck languages, remember `set nospell` to turn off
 set spell spelllang=en_us,es
 
