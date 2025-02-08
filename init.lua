@@ -67,6 +67,9 @@ vim.keymap.set('n', '<leader>E', vim.diagnostic.goto_prev, { desc = 'Go to previ
 -- Smoother exit to normal mode
 vim.keymap.set('i', 'kj', '<Esc>')
 
+-- Better mark bind
+vim.keymap.set('n', 'gm', '`')
+
 -- File tree shortcut
 vim.keymap.set('n', '<C-f>', ':Lex<cr>:vertical resize 30<cr>')
 
@@ -138,18 +141,6 @@ require('lazy').setup({
 	-- options to `gitsigns.nvim`. This is equivalent to the following Lua:
 	--    require('gitsigns').setup({ ... })
 	-- See `:help gitsigns` to understand what the configuration keys do
-	{ -- Adds git related signs to the gutter, as well as utilities for managing changes
-		'lewis6991/gitsigns.nvim',
-		opts = {
-			signs = {
-				add = { text = '+' },
-				change = { text = '~' },
-				delete = { text = '_' },
-				topdelete = { text = '‾' },
-				changedelete = { text = '~' },
-			},
-		},
-	},
 
 	-- NOTE: Plugins can also be configured to run Lua code when they are loaded.
 	-- This is often very useful to both group configuration, as well as handle
@@ -165,7 +156,7 @@ require('lazy').setup({
 		'folke/which-key.nvim',
 		event = 'VimEnter', -- Sets the loading event to 'VimEnter'
 		config = function() -- This is the function that runs, AFTER loading
-			require('which-key').setup()
+			require('which-key').setup({notify = false})
 
 			-- Document existing key chains
 			require('which-key').register {
@@ -329,7 +320,7 @@ require('lazy').setup({
 
 					-- Rename the variable under your cursor.
 					-- Most Language Servers support renaming across files, etc.
-					map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
+					map('<leader>r', vim.lsp.buf.rename, '[R]e[n]ame')
 
 					-- Opens a popup that displays documentation about the word under your cursor
 					map('K', vim.lsp.buf.hover, 'Hover [K]eyword Documentation')
@@ -423,29 +414,6 @@ require('lazy').setup({
 		'hrsh7th/nvim-cmp',
 		event = 'InsertEnter',
 		dependencies = {
-			-- Snippet Engine & its associated nvim-cmp source
-			{
-				'L3MON4D3/LuaSnip',
-				build = (function()
-					-- Build Step is needed for regex support in snippets.
-					-- This step is not supported in many windows environments.
-					-- Remove the below condition to re-enable on windows.
-					if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
-						return
-					end
-					return 'make install_jsregexp'
-				end)(),
-				dependencies = {
-					{
-						'rafamadriz/friendly-snippets',
-						config = function()
-							require('luasnip.loaders.from_vscode').lazy_load()
-						end,
-					},
-				},
-			},
-			'saadparwaiz1/cmp_luasnip',
-
 			-- Adds other completion capabilities.
 			--  nvim-cmp does not ship with all sources by default. They are split
 			--  into multiple repos for maintenance purposes.
@@ -455,15 +423,8 @@ require('lazy').setup({
 		config = function()
 			-- See `:help cmp`
 			local cmp = require 'cmp'
-			local luasnip = require 'luasnip'
-			luasnip.config.setup {}
 
 			cmp.setup {
-				snippet = {
-					expand = function(args)
-						luasnip.lsp_expand(args.body)
-					end,
-				},
 				completion = { completeopt = 'menu,menuone,noinsert' },
 
 				-- For an understanding of why these mappings were
@@ -480,7 +441,6 @@ require('lazy').setup({
 				},
 				sources = {
 					{ name = 'nvim_lsp' },
-					{ name = 'luasnip' },
 					{ name = 'path' },
 				},
 			}
@@ -507,26 +467,7 @@ require('lazy').setup({
 
 	-- Highlight todo, notes, etc in comments
 	{ 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
-
-	{ -- Collection of various small independent plugins/modules
-		'echasnovski/mini.nvim',
-		config = function()
-			-- Better Around/Inside textobjects
-			--
-			-- Examples:
-			--  - va)  - [V]isually select [A]round [)]paren
-			--  - yinq - [Y]ank [I]nside [N]ext [']quote
-			--  - ci'  - [C]hange [I]nside [']quote
-			require('mini.ai').setup { n_lines = 500 }
-
-			-- Add/delete/replace surroundings (brackets, quotes, etc.)
-			--
-			-- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
-			-- - sd'   - [S]urround [D]elete [']quotes
-			-- - sr)'  - [S]urround [R]eplace [)] [']
-			require('mini.surround').setup()
-		end,
-	},
+	
 	{ -- Highlight, edit, and navigate code
 		'nvim-treesitter/nvim-treesitter',
 		build = ':TSUpdate',
@@ -552,6 +493,12 @@ require('lazy').setup({
 			require('nvim-treesitter.configs').setup(opts)
 		end,
 	},
+	{
+		'tpope/vim-surround'
+	},
+	{
+		'tpope/vim-fugitive'
+	}
 }, {
 	ui = {
 		icons = {}

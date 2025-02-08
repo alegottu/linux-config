@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# usage: search [name pattern] search terms
+
+if [[ "$1" = "-n" ]]; then
+	find . -type f -name "$2" -exec grep -H "${@:3}" {} \;
+else
+	find . -type f -exec grep -H "$@" {} \;
+fi

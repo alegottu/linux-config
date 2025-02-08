@@ -122,3 +122,9 @@ PROMPT_COMMAND=${PROMPT_COMMAND:+"$PROMPT_COMMAND; "}'printf "\e]9;9;%s\e\\" "$(
 
 alias rr=". ranger"
 alias clip="xclip -selection clipboard"
+alias wpkill="powershell.exe Stop-Process -Name"
+alias rm="rm -i"
+alias godot='. /usr/local/bin/godot'
+
+# Setup keychain on login
+# eval `keychain --agents ssh --eval id_rsa`
