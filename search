@@ -1,9 +1,24 @@
 #!/bin/bash
 
-# usage: search [name pattern] search terms
+if [[ $# -eq 0 ]]; then echo "usage: search [-d directory] [-n name-pattern] search-terms"; exit 0; fi
 
-if [[ "$1" = "-n" ]]; then
-	find . -type f -name "$2" -exec grep -H "${@:3}" {} \;
+NAME=""
+DIR="."
+
+while [[ "$1" =~ "-" ]]; do
+	if [[ "$1" = "-n" ]]; then
+		NAME="$2"
+		shift 2
+	elif [[ "$1" = "-d" ]]; then
+		DIR="$2"
+		shift 2
+	fi
+done
+
+if [[ "$NAME" != "" ]]; then
+	echo find "$DIR" -type f -name "$NAME" -exec grep -nHE "$@" {} \;
+	find "$DIR" -type f -name "$NAME" -exec grep -nHE "$@" {} \;
 else
-	find . -type f -exec grep -H "$@" {} \;
+	echo find "$DIR" -type f -exec grep -nHE "$@" {} \;
+	find "$DIR" -type f -exec grep -nHE "$@" {} \;
 fi
