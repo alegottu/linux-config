@@ -1,0 +1,25 @@
+#!/bin/bash
+# Make sure permissions of this file are not writeable so that you can't just edit it remotely before logging in
+
+cd ~
+last_login_day=$(cat .last_login) # M/D/Y
+current_day=$(date +%D)
+
+START_MINUTES=420 # 7:00 AM
+current_minutes=$(expr `date +%H` \* 60 + `date +%M`)
+
+if [[ $last_login_day == $current_day ]] || [[ $current_minutes -lt $START_MINUTES ]]; then
+	exit
+fi
+
+# Make sure the permissions of the below file are also correct
+echo $current_day > .last_login
+DEADLINE_MINUTES=605 # 10:05 AM
+
+if [[ $current_minutes -gt $DEADLINE_MINUTES ]]; then
+	echo "Yikes"
+	cd ~/Projects/Rust/discord-bot/
+	cargo run send
+else
+	echo "Ride on time"
+fi

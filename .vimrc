@@ -1,10 +1,6 @@
 " Show where you are in a file
 set ruler
 
-" More visible tab spacing
-set tabstop=4
-set shiftwidth=4
-
 " Set spellcheck languages, remember `set nospell` to turn off
 set spell spelllang=en_us,es
 
@@ -49,6 +45,10 @@ augroup END
 
 " Automatically yank text to system clipboard also
 autocmd TextYankPost * :call system('xclip -selection clipboard', @0)
+
+" Disable force write (!w)
+autocmd BufEnter * if &readonly | set nowrite | endif
+autocmd OptionSet write if &readonly | set nowrite | endif
 
 " Handle standard plugins
 packadd termdebug

@@ -125,6 +125,7 @@ alias clip="xclip -selection clipboard"
 alias wpkill="powershell.exe Stop-Process -Name"
 alias rm="rm -i"
 alias godot='. /usr/local/bin/godot'
+alias langtool='docker run --rm -p 8010:8010 -e langtool_abTest=null -e langtool_abTestClients=null erikvl87/languagetool'
 
 # Setup keychain on login
 # eval `keychain --agents ssh --eval id_rsa`
