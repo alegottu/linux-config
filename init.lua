@@ -68,7 +68,7 @@ vim.keymap.set('n', '<leader>E', vim.diagnostic.goto_prev, { desc = 'Go to previ
 vim.keymap.set('i', 'kj', '<Esc>')
 
 -- Better mark bind
-vim.keymap.set('n', 'gm', '`')
+vim.keymap.set('n', 'gm', '`', { desc = '[G]o to [m]ark' })
 
 -- File tree shortcut
 vim.keymap.set('n', '<C-f>', ':Lex<cr>:vertical resize 30<cr>')
