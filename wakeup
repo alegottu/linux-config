@@ -1,25 +1,43 @@
 #!/bin/bash
 # Make sure permissions of this file are not writeable so that you can't just edit it remotely before logging in
 
+noCheating() {
+	date +%D > .last_login
+	echo "No cheating"
+	cd ~/Projects/Rust/discord-bot/
+	cargo run send
+	exit
+}
+
 cd ~
+
+if [[ ! -f .last_login ]]; then
+	noCheating
+fi
 
 START_MINUTES=420 # 7:00 AM
 DEADLINE_MINUTES=605 # 10:05 AM
 file_mod_minutes=$(expr `date -r .last_login +%H` \* 60 + `date -r .last_login +%M`)
 
 if [[ $file_mod_minutes -lt $START_MINUTES ]] || [[ $file_mod_minutes -gt $DEADLINE_MINUTES ]]; then
-	echo "No cheating"
-	cd ~/Projects/Rust/discord-bot/
-	cargo run send
-	exit
+	noCheating
 fi
 
 last_login_day=$(cat .last_login) # M/D/Y
-current_day=$(date +%D)
+current_day=$(date +%j)
 current_minutes=$(expr `date +%H` \* 60 + `date +%M`)
+day_diff=$(expr \( $current_day - $last_login_day \) % 365)
 
 if [[ $last_login_day == $current_day ]] || [[ $current_minutes -lt $START_MINUTES ]]; then
 	exit
+fi
+
+# No more than a day gap between logins
+if [[ $day_diff -lt 0 ]]; then
+	day_diff=$(expr $day_diff \* -1)
+fi
+if [[ $day_diff -gt 1 ]]; then
+	noCheating
 fi
 
 echo $current_day > .last_login

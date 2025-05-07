@@ -1,19 +1,22 @@
 #!/bin/bash
 
-if [[ $# -eq 0 ]]; then echo "usage: search [-d directory] [-n name-pattern] [-c context] search-terms"; exit 0; fi
+if [[ $# -eq 0 ]]; then echo "usage: search [-d directory] [-n name-pattern] [-t|e (file) type/extension] [-c context] search-terms"; exit 0; fi
 
 NAME=""
 DIR="."
 CONTEXT="0"
 
 while [[ "$1" =~ "-" ]]; do
-	if [[ "$1" = "-n" ]]; then
-		NAME="$2"
-		shift 2
-	elif [[ "$1" = "-d" ]]; then
+	if [[ "$1" = "-d"* ]]; then
 		DIR="$2"
 		shift 2
-	elif [[ "$1" = "-c" ]]; then
+	elif [[ "$1" = "-n"* ]]; then
+		NAME="$2"
+		shift 2
+	elif [[ "$1" = "-t"* ]] || [[ "$1" = "-e"* ]]; then
+		NAME="*.$2"
+		shift 2
+	elif [[ "$1" = "-c"* ]]; then
 		CONTEXT="$2"
 		shift 2
 	fi
