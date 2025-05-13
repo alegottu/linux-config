@@ -28,6 +28,20 @@ current_day=$(date +%j)
 current_minutes=$(expr `date +%H` \* 60 + `date +%M`)
 day_diff=$(expr \( $current_day - $last_login_day \) % 365)
 
+if [[ -f .login_break ]]; then
+	break_days=$(expr `cat .login_break` - 1)
+
+	if [[ $break_days -le 0 ]]; then
+		rm -f .login_break
+	else
+		echo $break_days > .login_break
+	fi
+
+	echo $current_day > .last_login
+	echo "Lucky break"
+	exit
+fi
+
 if [[ $last_login_day == $current_day ]] || [[ $current_minutes -lt $START_MINUTES ]]; then
 	exit
 fi

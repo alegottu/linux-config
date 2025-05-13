@@ -129,6 +129,10 @@ alias langtool='docker run --rm -p 8010:8010 -e langtool_abTest=null -e langtool
 alias py="python3"
 alias pdb="python3 -m pdb"
 
+name() { fzf -f "$1" | head -n 1; }
+gawk-trees() { cd "$HOME/projects/c/gawk-trees/"; export AWKLIBPATH="$PWD/bin/"; }
+vaults() { cd "$HOME/second-brain/"; source env/bin/activate; }
+
 # Setup keychain on login
 # eval `keychain --agents ssh --eval id_rsa`
 
