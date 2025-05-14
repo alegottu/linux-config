@@ -7,8 +7,10 @@ curl -Lo ~/.vim/autoload/plug.vim --create-dirs \
 echo "Reload .vimrc and :PlugInstall to install plugins."
 
 # nvim
-curl -Lo ~/.config/nvim/init.lua --create-dirs \ 
-    https://raw.githubusercontent.com/alegottu/linux-config/main/init.lua
+curl -Lo ~/.config/nvim/init.lua --create-dirs https://raw.githubusercontent.com/alegottu/linux-config/main/init.lua
+if ! command -v npm > /dev/null; then
+	sudo apt install npm nodejs
+fi
 
 # bash
 curl -L https://raw.githubusercontent.com/alegottu/linux-config/main/.bashrc -o ~/.bashrc

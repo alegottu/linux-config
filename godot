@@ -1,11 +1,15 @@
 #!/bin/bash
 
+if [[ "$1" == "--set-path" ]]; then
+	echo "$2" > .godot-projs
+fi
+
 if [[ "$#" -ge 1 ]]; then
 	Godot_v4.3-stable_win64_console.exe "$@"
 else
-	cd "/mnt/d/Program Files (x86)/Godot/Projects"
+	cd "$(cat ~/.godot-projs)"
 	ls -1 | cat -n 
-	echo "Select a project: [1-n]"
+	echo "Select a project: [1-n] (use --set-path to change projects path)"
 	read project
 	project=$(ls -m | awk -F ', ' "{print \$$project}")
 	cd "$project"

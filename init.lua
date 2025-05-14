@@ -120,6 +120,20 @@ vim.api.nvim_create_autocmd({ "OptionSet" }, {
 	command = "if &readonly | set nowrite | endif"
 })
 
+function transparent_background()
+	vim.cmd.hi 'Comment gui=none'
+	vim.cmd.hi 'Normal ctermbg=none guibg=none'
+	vim.o.cursorline = false
+end
+
+-- Keep background transparent for every colorscheme
+vim.api.nvim_create_autocmd({ "ColorScheme" }, {
+	pattern = "*",
+	callback = transparent_background
+})
+
+vim.api.nvim_create_user_command("Theme", "Telescope colorscheme", {})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -145,6 +159,14 @@ require('lazy').setup({
 	--  This is equivalent to:
 	--    require('Comment').setup({})
 	-- "gc" to comment visual regions/lines
+	
+	-- Themes
+	{ 'raddari/last-color.nvim' },
+	{ 'https://gitlab.com/HiPhish/resolarized.nvim' },
+	{ '4513ECHO/vim-colors-hatsunemiku' },
+	{ "catppuccin/nvim", name = "catppuccin", priority = 1000 },
+	{ "rose-pine/neovim" },
+	--TODO: come back for gruvbox later
 
 	{ 'numToStr/Comment.nvim',    opts = {} },
 	-- Here is a more advanced example where we pass configuration
@@ -273,8 +295,8 @@ require('lazy').setup({
 		'neovim/nvim-lspconfig',
 		dependencies = {
 			-- Automatically install LSPs and related tools to stdpath for Neovim
-			{ 'williamboman/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
-			'williamboman/mason-lspconfig.nvim',
+			{ "mason-org/mason.nvim", version = "^1.0.0" },  -- explicit v1 lock
+			{ "mason-org/mason-lspconfig.nvim", version = "^1.0.0" }, -- same here
 			'WhoIsSethDaniel/mason-tool-installer.nvim',
 
 			-- Useful status updates for LSP.
@@ -457,27 +479,6 @@ require('lazy').setup({
 		end,
 	},
 
-	{ -- You can easily change to a different colorscheme.
-		-- Change the name of the colorscheme plugin below, and then
-		-- change the command in the config to whatever the name of that colorscheme is.
-		--
-		-- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-		'folke/tokyonight.nvim',
-		priority = 1000, -- Make sure to load this before all the other start plugins.
-		init = function()
-			-- Load the colorscheme here.
-			-- Styles for current:
-			-- 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day', 'tokyonight-night'
-
-			vim.cmd.colorscheme 'tokyonight-day'
-
-			-- You can configure highlights by doing something like:
-			vim.cmd.hi 'Comment gui=none'
-			vim.cmd.hi 'Normal ctermbg=none guibg=none'
-			vim.o.cursorline = false
-		end,
-	},
-
 	-- Highlight todo, notes, etc in comments
 	{ 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 	
@@ -517,3 +518,7 @@ require('lazy').setup({
 		icons = {}
 	},
 })
+
+-- Load last used theme or the default as a backup
+local theme = require('last-color').recall() or 'default'
+vim.cmd.colorscheme(theme)
