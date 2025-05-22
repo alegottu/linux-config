@@ -1,65 +1,95 @@
 #!/bin/bash
-# Make sure permissions of this file are not writeable so that you can't just edit it remotely before logging in
-
-noCheating() {
-	date +%D > .last_login
-	echo "No cheating"
-	cd ~/Projects/Rust/discord-bot/
-	cargo run send
-	exit
-}
+# Make sure permissions of this file are correct so that you can't just edit it remotely before logging in;
+# To make certain, put it in a directory with no write permissions so that it can't just be deleted remotely either;
+# Then, call it from /etc/profile, which also can only be deleted or modified by root
 
 cd ~
+readonly LOGIN_FILE=.last_login
+readonly MISSED_LOGIN_FILE=.missed_login
 
-if [[ ! -f .last_login ]]; then
-	noCheating
+noCheating() {
+	date +%j > $LOGIN_FILE
+	touch $MISSED_LOGIN_FILE
+	echo "$1; commands to stop discord bot copied to clipboard"
+	echo "pkill wakeup; pkill discord-account" | clip
+	cd ~/projects/rust/discord-bot/
+	cargo run send
+	exit 0
+}
+
+if [[ ! -f $LOGIN_FILE ]]; then
+	noCheating "No cheating"
 fi
 
-START_MINUTES=420 # 7:00 AM
-DEADLINE_MINUTES=605 # 10:05 AM
-file_mod_minutes=$(expr `date -r .last_login +%H` \* 60 + `date -r .last_login +%M`)
-
-if [[ $file_mod_minutes -lt $START_MINUTES ]] || [[ $file_mod_minutes -gt $DEADLINE_MINUTES ]]; then
-	noCheating
-fi
-
-last_login_day=$(cat .last_login) # M/D/Y
+file_mod_day=$(date -r $LOGIN_FILE +%j)
+last_login_day=$(cat $LOGIN_FILE)
 current_day=$(date +%j)
+
+# if the login file was created or modified on an invalid day
+if [[ $file_mod_day -ne $last_login_day ]]; then
+	noCheating "No cheating"
+fi
+
+readonly START_MINUTES=420 # 7:00 AM
+readonly DEADLINE_MINUTES=605 # 10:05 AM
+file_mod_minutes=$(expr `date -r $LOGIN_FILE +%H` \* 60 + `date -r $LOGIN_FILE +%M`)
+
+# if the login file was modified or created at an invalid time
+if [[ $file_mod_minutes -lt $START_MINUTES ]] || [[ $file_mod_minutes -gt $DEADLINE_MINUTES ]]; then
+	noCheating "No cheating"
+fi
+
 current_minutes=$(expr `date +%H` \* 60 + `date +%M`)
+
+# if we already logged in, or it's too early to log in, do nothing
+if [[ $last_login_day -eq $current_day ]] || [[ $current_minutes -lt $START_MINUTES ]]; then
+	exit 0
+fi
+
+if [[ $current_minutes -gt $DEADLINE_MINUTES ]]; then
+	noCheating "Yikes"
+fi
+
+# if we missed the last login, there should be a file from yesterday to show it
+if [[ -f $MISSED_LOGIN_FILE ]]; then
+	if [[ $(date -r $MISSED_LOGIN_FILE +%j) -ne $last_login_day ]]; then
+		noCheating "No cheating"
+	else
+		echo $current_day > $LOGIN_FILE
+		exit 0
+fi
+
 day_diff=$(expr \( $current_day - $last_login_day \) % 365)
 
-if [[ -f .login_break ]]; then
-	break_days=$(expr `cat .login_break` - 1)
-
-	if [[ $break_days -le 0 ]]; then
-		rm -f .login_break
-	else
-		echo $break_days > .login_break
-	fi
-
-	echo $current_day > .last_login
-	echo "Lucky break"
-	exit
-fi
-
-if [[ $last_login_day == $current_day ]] || [[ $current_minutes -lt $START_MINUTES ]]; then
-	exit
-fi
-
-# No more than a day gap between logins
+# Absolute value of day difference, in case of last day of last year vs first day of new year
 if [[ $day_diff -lt 0 ]]; then
 	day_diff=$(expr $day_diff \* -1)
 fi
+
+# No more than a day gap between logins
 if [[ $day_diff -gt 1 ]]; then
-	noCheating
+	readonly BREAK_FILE=.login_break
+	if [[ -f $BREAK_FILE ]]; then
+		file_mod_day=$(date -r $BREAK_FILE +%j)
+		break_days=$(cat $BREAK_FILE)
+		day_sum=$(expr $file_mod_day + $break_days)
+		# NOTE: with the above you can't create the break ahead of time after midnight, can maybe add exception for this
+
+		# if the break wasn't created ahead of time on the last login date,
+		# or we went past the planned amount of break days
+		if [[ $file_mod_day -ne $last_login_day ]] || [[ $day_sum -lt $(expr $current_day - 1) ]]; then
+			noCheating "No cheating"
+		fi
+
+		rm -f $BREAK_FILE
+		echo $current_day > $LOGIN_FILE
+		echo "Lucky break"
+		exit 0
+	else
+		noCheating "No cheating"
+	fi
 fi
 
-echo $current_day > .last_login
-
-if [[ $current_minutes -gt $DEADLINE_MINUTES ]]; then
-	echo "Yikes"
-	cd ~/Projects/Rust/discord-bot/
-	cargo run send
-else
-	echo "Ride on time"
-fi
+# success
+echo "Ride on time"
+echo $current_day > $LOGIN_FILE

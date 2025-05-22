@@ -2,6 +2,7 @@
 
 if [[ "$1" == "--set-path" ]]; then
 	echo "$2" > .godot-projs
+	exit 0
 fi
 
 if [[ "$#" -ge 1 ]]; then
