@@ -2,8 +2,11 @@
 # Make sure permissions of this file are correct so that you can't just edit it remotely before logging in;
 # To make certain, put it in a directory with no write permissions so that it can't just be deleted remotely either;
 # Then, call it from /etc/profile, which also can only be deleted or modified by root
+#
+# If you are running this from WSL, run it on Windows startup so that you can't just wait it out until the next
+# day by editing the files on the current day
 
-cd ~
+cd /home/alegottu
 readonly LOGIN_FILE=.last_login
 readonly MISSED_LOGIN_FILE=.missed_login
 
@@ -11,14 +14,23 @@ noCheating() {
 	date +%j > $LOGIN_FILE
 	touch $MISSED_LOGIN_FILE
 	echo "$1; commands to stop discord bot copied to clipboard"
-	echo "pkill wakeup; pkill discord-account" | clip
-	cd ~/projects/rust/discord-bot/
-	cargo run send
+	echo "pkill wakeup; pkill discord-account" | xclip -selection clipboard
+	cd no-write/discord-bot # not a symbolic link so it can't be deleted
+	./run send
 	exit 0
 }
 
+readonly START_MINUTES=420 # 7:00 AM
+readonly DEADLINE_MINUTES=605 # 10:05 AM
+current_minutes=$(expr `date +%H` \* 60 + `date +%M`)
+
+# too early, do nothing
+if [[ $current_minutes -lt $START_MINUTES ]]; then
+	exit 0
+fi
+
 if [[ ! -f $LOGIN_FILE ]]; then
-	noCheating "No cheating"
+	noCheating "Missing login file"
 fi
 
 file_mod_day=$(date -r $LOGIN_FILE +%j)
@@ -27,39 +39,33 @@ current_day=$(date +%j)
 
 # if the login file was created or modified on an invalid day
 if [[ $file_mod_day -ne $last_login_day ]]; then
-	noCheating "No cheating"
+	noCheating "Login file was modified"
 fi
 
-readonly START_MINUTES=420 # 7:00 AM
-readonly DEADLINE_MINUTES=605 # 10:05 AM
 file_mod_minutes=$(expr `date -r $LOGIN_FILE +%H` \* 60 + `date -r $LOGIN_FILE +%M`)
+day_diff=$(expr \( $current_day - $last_login_day \) % 365)
 
 # if the login file was modified or created at an invalid time
 if [[ $file_mod_minutes -lt $START_MINUTES ]] || [[ $file_mod_minutes -gt $DEADLINE_MINUTES ]]; then
-	noCheating "No cheating"
+	# if we missed the last login, there should be a file from yesterday to show it
+	if [[ ! -f $MISSED_LOGIN_FILE ]]; then
+		noCheating "Last login was at a bad time, but there's no corresponding missed login file"
+	elif [[ $(date -r $MISSED_LOGIN_FILE +%j) -ne $last_login_day ]]; then
+		noCheating "Last login was at a bad time, but the missed login file was modified"
+	else
+		day_diff=0 # bypasses regular day difference check if file is valid
+	fi
 fi
 
-current_minutes=$(expr `date +%H` \* 60 + `date +%M`)
 
-# if we already logged in, or it's too early to log in, do nothing
-if [[ $last_login_day -eq $current_day ]] || [[ $current_minutes -lt $START_MINUTES ]]; then
+# if we already logged in
+if [[ $last_login_day -eq $current_day ]]; then
 	exit 0
 fi
 
 if [[ $current_minutes -gt $DEADLINE_MINUTES ]]; then
 	noCheating "Yikes"
 fi
-
-# if we missed the last login, there should be a file from yesterday to show it
-if [[ -f $MISSED_LOGIN_FILE ]]; then
-	if [[ $(date -r $MISSED_LOGIN_FILE +%j) -ne $last_login_day ]]; then
-		noCheating "No cheating"
-	else
-		echo $current_day > $LOGIN_FILE
-		exit 0
-fi
-
-day_diff=$(expr \( $current_day - $last_login_day \) % 365)
 
 # Absolute value of day difference, in case of last day of last year vs first day of new year
 if [[ $day_diff -lt 0 ]]; then
@@ -78,7 +84,7 @@ if [[ $day_diff -gt 1 ]]; then
 		# if the break wasn't created ahead of time on the last login date,
 		# or we went past the planned amount of break days
 		if [[ $file_mod_day -ne $last_login_day ]] || [[ $day_sum -lt $(expr $current_day - 1) ]]; then
-			noCheating "No cheating"
+			noCheating "Break file was created too recently, or the break doesn't add up to the amount of days missed"
 		fi
 
 		rm -f $BREAK_FILE
@@ -86,10 +92,11 @@ if [[ $day_diff -gt 1 ]]; then
 		echo "Lucky break"
 		exit 0
 	else
-		noCheating "No cheating"
+		noCheating "1+ day gap between now and your last login, but no break file"
 	fi
 fi
 
 # success
 echo "Ride on time"
 echo $current_day > $LOGIN_FILE
+rm -f $MISSED_LOGIN_FILE

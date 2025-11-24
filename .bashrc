@@ -125,6 +125,7 @@ alias clip="xclip -selection clipboard"
 alias wpkill="powershell.exe Stop-Process -Name"
 alias rm="rm -i"
 alias godot='. /usr/local/bin/godot'
+alias unity='. /usr/local/bin/unity'
 alias langtool='docker run --rm -p 8010:8010 -e langtool_abTest=null -e langtool_abTestClients=null erikvl87/languagetool'
 alias py="python3"
 alias pdb="python3 -m pdb"
