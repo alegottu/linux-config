@@ -9,8 +9,8 @@ current_minutes=$(expr `date +%H` \* 60 + `date +%M`)
 
 fail() {
 	rm -f $LOGIN_FILE
-	echo "$1; wsl --shutdown
-if you don't want the bot to continue to run"
+	echo "$1; Ctrl+v to shut down"
+	echo 'wsl --shutdown' | clip
 	# echo "pkill wakeup; pkill discord-account" | xclip -selection clipboard
 
 	export PATH=/home/alegottu/.cargo/bin:$PATH # Let cargo be found by root
@@ -27,14 +27,12 @@ success() {
 # Too early, do nothing
 if [[ $current_minutes -lt $START_MINUTES ]]; then
 	echo "Too early"; exit 0
-fi
-
-# No login file counts as empty streak
-if [[ ! -f $LOGIN_FILE ]]; then
-	if [[ $current_minutes -gt $DEADLINE_MINUTES ]]; then
+elif [[ $current_minutes -gt $DEADLINE_MINUTES ]]; then
+	# No login file counts as empty streak
+	if [[ ! -f $LOGIN_FILE ]]; then
 		echo "Too late, streak not started"; exit 0
 	else
-		success 0
+		fail "Yikes"
 	fi
 fi
 
