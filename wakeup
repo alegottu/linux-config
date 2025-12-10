@@ -9,11 +9,9 @@ current_minutes=$(expr `date +%H` \* 60 + `date +%M`)
 
 fail() {
 	rm -f $LOGIN_FILE
-	echo "$1; Ctrl+v to shut down"
+	echo "$1; wsl --shutdown to kill bot"
 	echo 'wsl --shutdown' | clip
-	# echo "pkill wakeup; pkill discord-account" | xclip -selection clipboard
 
-	export PATH=/home/alegottu/.cargo/bin:$PATH # Let cargo be found by root
 	cd no-write/discord-bot # Not a symbolic link so it can't be deleted
 	./run send
 	exit 0
@@ -27,23 +25,23 @@ success() {
 # Too early, do nothing
 if [[ $current_minutes -lt $START_MINUTES ]]; then
 	echo "Too early"; exit 0
-elif [[ $current_minutes -gt $DEADLINE_MINUTES ]]; then
-	# No login file counts as empty streak
-	if [[ ! -f $LOGIN_FILE ]]; then
-		echo "Too late, streak not started"; exit 0
-	else
-		fail "Yikes"
-	fi
 fi
 
 last_login_day=$(date -r $LOGIN_FILE +%j)
-streak=$(cat $LOGIN_FILE)
 current_day=$(date +%j)
+streak=$(cat $LOGIN_FILE)
 day_diff=$(expr \( $current_day - $last_login_day \) % 365)
 
-# If we already logged in
-if [[ $last_login_day -eq $current_day ]]; then
-	echo "Already logged in"; exit 0
+if [[ $current_minutes -gt $DEADLINE_MINUTES ]]; then
+	# No login file counts as empty streak
+	if [[ ! -f $LOGIN_FILE ]]; then
+		echo "Too late, streak not started"; exit 0
+	# If we already logged in
+	elif [[ $last_login_day -eq $current_day ]]; then
+		echo "Already logged in"; exit 0
+	else
+		fail "Yikes"
+	fi
 fi
 
 # Absolute value of day difference, in case of last day of last year vs first day of new year
