@@ -133,6 +133,7 @@ alias pdb="python3 -m pdb"
 name() { fzf -f "$1" | head -n 1; }
 gawk-trees() { cd "$HOME/projects/c/gawk-trees/"; export AWKLIBPATH="$PWD/bin/"; }
 vaults() { cd "$HOME/second-brain/"; source env/bin/activate; }
+compress() { ffmpeg -i "$1" -vcodec libx265 -crf 28 "$2"; }
 
 # Setup keychain on login
 # eval `keychain --agents ssh --eval id_rsa`

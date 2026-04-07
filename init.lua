@@ -355,7 +355,7 @@ require('lazy').setup({
 					map('<leader>r', vim.lsp.buf.rename, '[R]e[n]ame')
 
 					-- Opens a popup that displays documentation about the word under your cursor
-					map('K', vim.lsp.buf.hover, 'Hover [K]eyword Documentation')
+					map('H', vim.lsp.buf.hover, '[H]over Documentation')
 
 					-- WARN: This is not Goto Definition, this is Goto Declaration.
 					-- For example, in C this would take you to the header.

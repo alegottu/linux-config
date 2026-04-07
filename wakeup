@@ -10,7 +10,6 @@ current_minutes=$(expr `date +%H` \* 60 + `date +%M`)
 fail() {
 	rm -f $LOGIN_FILE
 	echo "$1; wsl --shutdown to kill bot"
-	echo 'wsl --shutdown' | clip
 
 	cd no-write/discord-bot # Not a symbolic link so it can't be deleted
 	./run send
