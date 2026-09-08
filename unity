@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [[ "$1" == "--set-path" ]]; then
+	echo "$2" > ~/.unity-projs
+	exit 0
+fi
+
+cd "$(cat ~/.unity-projs)"
+ls -1 | cat -n 
+echo "Select a project: [1-n] (use --set-path to change projects path)"
+read project
+project=$(ls -1 | awk -F '\\n' "{if (NR==$project) print \$0}")
+cd "$project"
